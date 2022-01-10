@@ -1,0 +1,1 @@
+python train_runet.py  --name runet --inet runet --model runet_model --hyper
