@@ -206,7 +206,7 @@ class ERRNetModel(ERRNetBase):
 
         # 添加反射预训练模型
         self.net_u = UNet_SE(6, channel=32, out_channels=3)
-        pthfile = r'/home/iv/Annotation/KX/Reflection/codes/checkpoints/runet/runet_latest_20211229.pt'
+        pthfile = r'/home/iv/Annotations/KX/Reflection/codes/checkpoints/runet/runet_latest_20211229.pt'
         self.net_u.load_state_dict(torch.load(pthfile)['icnn'])
         self.net_u = self.net_u.to(self.device)
         in_channels += 3
@@ -315,7 +315,8 @@ class ERRNetModel(ERRNetBase):
         output_i = self.net_i(input_i)
 
         self.output_i = output_i
-
+        # print("==========================================")
+        # print(output_i.shape)
         return output_i
         
     def optimize_parameters(self):

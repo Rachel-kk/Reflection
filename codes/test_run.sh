@@ -1,0 +1,1 @@
+python test_errnet.py --name errnet -r --icnn_path checkpoints/errnet/errnet_latest_e2_2022_01_14.pt --hyper

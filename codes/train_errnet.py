@@ -37,7 +37,7 @@ def main():
 # datadir_real = join(datadir, 'real_train')
 
 # modify the following code to
-    datadir = '/home/iv/Annotation/KX/data/Reflection'
+    datadir = '/home/iv/Annotations/KX/data/Reflection'
     datadir_syn = join(datadir, 'VOCdevkit/VOC2012/PNGImages')
     datadir_real = join(datadir, 'real_train')
 

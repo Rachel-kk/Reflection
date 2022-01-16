@@ -54,6 +54,36 @@ class SELayer(nn.Module):
         return x * y
 
 
+
+class DilatedConvolutions(nn.Module):
+    '''
+    Sequential Dialted convolutions
+    '''
+    def __init__(self, in_channels,out_channels, n_channels, n_convolutions):
+        super(DilatedConvolutions, self).__init__()
+        kernel_size = 3
+        padding = 1
+        self.non_linearity = nn.LeakyReLU(0.2, inplace=True)
+        self.strides = [2 ** k for k in range(n_convolutions)]
+        convs = [nn.Conv2d(in_channels, n_channels, kernel_size=1, dilation=1)]
+        convs.extend([nn.Conv2d(n_channels, n_channels, kernel_size=kernel_size, dilation=s, padding=s) for s in self.strides])
+        convs.append(nn.Conv2d(n_channels, n_channels, kernel_size=kernel_size,  dilation=1, padding=padding))
+        self.convs = nn.ModuleList()
+        self.bns   = nn.ModuleList()
+
+        for c in convs:
+            self.convs.append(c)
+            self.bns.append(nn.BatchNorm2d(n_channels))
+        self.bottleneck = nn.Conv2d(n_channels, out_channels, kernel_size=1, dilation=1)
+
+    def forward(self, x):
+        for c, bn in zip(self.convs, self.bns):
+            x = c(x)
+            x = bn(x)
+            x = self.non_linearity(x)
+        return self.bottleneck(x)
+
+
 class DRNet(torch.nn.Module):
     def __init__(self, in_channels, out_channels, n_feats, n_resblocks, norm=nn.BatchNorm2d,
                  se_reduction=None, res_scale=1, bottom_kernel_size=3, pyramid=False):
@@ -80,7 +110,8 @@ class DRNet(torch.nn.Module):
 
         if not pyramid:
             self.deconv2 = ConvLayer(conv, n_feats, n_feats, kernel_size=3, stride=1, norm=norm, act=act)
-            self.deconv3 = ConvLayer(conv, n_feats, out_channels, kernel_size=1, stride=1, norm=None, act=act)
+            self.dilated_conv_module = DilatedConvolutions(n_feats, out_channels,n_channels=n_feats // 4, n_convolutions=6)
+            # self.deconv3 = ConvLayer(conv, n_feats, out_channels, kernel_size=1, stride=1, norm=None, act=act)
         else:
             self.deconv2 = ConvLayer(conv, n_feats, n_feats, kernel_size=3, stride=1, norm=norm, act=act)
             self.pyramid_module = PyramidPooling(n_feats, n_feats, scales=(4, 8, 16, 32), ct_channels=n_feats // 4)
@@ -96,7 +127,9 @@ class DRNet(torch.nn.Module):
         x = self.deconv2(x)
         if self.pyramid_module is not None:
             x = self.pyramid_module(x)
-        x = self.deconv3(x)
+            x = self.deconv3(x)
+        else:
+            x = self.dilated_conv_module(x)
 
         return x
 
