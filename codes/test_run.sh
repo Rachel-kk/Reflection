@@ -1,1 +1,1 @@
-python test_errnet.py --name errnet -r --icnn_path checkpoints/errnet/errnet_latest_e2_2022_01_14.pt --hyper
+CUDA_VISIBLE_DEVICES=7 python test_errnet.py --name errnet -r --icnn_path ./checkpoints/errnet/errnet_latest_e5_2022-04-06.pt  --gpu_ids 0

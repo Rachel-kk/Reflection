@@ -177,7 +177,7 @@ class ERRNetModel(ERRNetBase):
         self.iterations = 0
         # self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         if torch.cuda.is_available():
-            self.device = 'cuda'
+            self.device = 'cuda:0'
         else:
             self.device = 'cpu'
     def print_network(self):
@@ -205,12 +205,14 @@ class ERRNetModel(ERRNetBase):
             in_channels += 1472
 
         # 添加反射预训练模型
+        # self.net_u = None
         self.net_u = UNet_SE(6, channel=32, out_channels=3)
         pthfile = r'/home/iv/Annotations/KX/Reflection/codes/checkpoints/runet/runet_latest_20211229.pt'
+        # pthfile = r'/home/rackel_kk/Annotation/KX/Reflection/codes/checkpoints/runet/runet_latest_20211229.pt'
         self.net_u.load_state_dict(torch.load(pthfile)['icnn'])
         self.net_u = self.net_u.to(self.device)
         in_channels += 3
-
+        print(self.device)
         self.net_i = arch.__dict__[self.opt.inet](in_channels, 3).to(self.device)
         networks.init_weights(self.net_i, init_type=opt.init_type) # using default initialization as EDSR
         self.edge_map = EdgeMap(scale=1).to(self.device)
@@ -298,20 +300,20 @@ class ERRNetModel(ERRNetBase):
     def forward(self):
         # without edge
         input_i = self.input
-
+        input_i = [input_i]
         if self.vgg is not None:
             hypercolumn = self.vgg(self.input)
             _, C, H, W = self.input.shape
             hypercolumn = [F.interpolate(feature.detach(), size=(H, W), mode='bilinear', align_corners=False) for feature in hypercolumn]
-            input_i = [input_i]
+            #input_i = [input_i]
             input_i.extend(hypercolumn)
-            # input_i = torch.cat(input_i, dim=1)
+
 
         if self.net_u is not None:
             runet_out = self.net_u(torch.cat((self.input, self.input - self.target_r), dim = 1))
             input_i.extend(runet_out.unsqueeze(0))
-            input_i = torch.cat(input_i, dim=1)
-
+            # input_i = torch.cat(input_i, dim=1)
+        input_i = torch.cat(input_i, dim=1)
         output_i = self.net_i(input_i)
 
         self.output_i = output_i
@@ -371,7 +373,7 @@ class ERRNetModel(ERRNetBase):
             if model.isTrain:
                 model.optimizer_G.load_state_dict(state_dict['opt_g'])
         else:
-            state_dict = torch.load(icnn_path)
+            state_dict = torch.load(icnn_path, map_location='cuda:0')
             model.net_i.load_state_dict(state_dict['icnn'])
             model.epoch = state_dict['epoch']
             model.iterations = state_dict['iterations']
@@ -408,7 +410,7 @@ class NetworkWrapper(ERRNetBase):
     def __init__(self):
         self.epoch = 0
         self.iterations = 0
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        # self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     def print_network(self):
         print('--------------------- NetworkWrapper ---------------------')
@@ -557,7 +559,7 @@ class RUNetModel(ERRNetBase):
         self.iterations = 0
         # self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         if torch.cuda.is_available():
-            self.device = 'cuda'
+            self.device = 'cuda:0'
         else:
             self.device = 'cpu'
     def print_network(self):
@@ -670,7 +672,7 @@ class RUNetModel(ERRNetBase):
             if model.isTrain:
                 model.optimizer_G.load_state_dict(state_dict['opt_g'])
         else:
-            state_dict = torch.load(icnn_path)
+            state_dict = torch.load(icnn_path, map_location='cuda:0')
             model.net_i.load_state_dict(state_dict['icnn'])
             model.epoch = state_dict['epoch']
             model.iterations = state_dict['iterations']

@@ -17,7 +17,7 @@ opt.display_id=0
 opt.verbose = False
 
 datadir = '/home/iv/Annotations/KX/data/Reflection/testsets'
-
+# datadir = '/home/rackel_kk/Annotation/KX/data/Reflection/testsets'
 # Define evaluation/test dataset
 
 eval_dataset_ceilnet = datasets.CEILTestDataset(join(datadir, 'testdata_CEILNET_table2'))
@@ -91,9 +91,10 @@ result_dir = './results'
 # res = engine.eval(eval_dataloader_real, dataset_name='testdata_real')
 
 res = engine.eval(eval_dataloader_real, dataset_name='testdata_real', savedir=join(result_dir, 'real20'))
+res = engine.eval(eval_dataloader_solidobject, dataset_name='testdata_solidobject', savedir=join(result_dir, 'solidobject'))
 res = engine.eval(eval_dataloader_postcard, dataset_name='testdata_postcard', savedir=join(result_dir, 'postcard'))
 res = engine.eval(eval_dataloader_sir2, dataset_name='testdata_sir2', savedir=join(result_dir, 'sir2_withgt'))
-res = engine.eval(eval_dataloader_solidobject, dataset_name='testdata_solidobject', savedir=join(result_dir, 'solidobject'))
+
 
 # test on our collected unaligned data or internet images
 # res = engine.test(test_dataloader_internet, savedir=join(result_dir, 'internet'))

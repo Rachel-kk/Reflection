@@ -37,6 +37,7 @@ class Engine(object):
         avg_meters = util.AverageMeters()
         opt = self.opt
         model = self.model
+
         epoch = self.epoch
 
         epoch_start_time = time.time()
