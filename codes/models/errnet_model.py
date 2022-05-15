@@ -207,12 +207,12 @@ class ERRNetModel(ERRNetBase):
         # 添加反射预训练模型
         # self.net_u = None
         self.net_u = UNet_SE(6, channel=32, out_channels=3)
-        pthfile = r'/home/iv/Annotations/KX/Reflection/codes/checkpoints/runet/runet_latest_20211229.pt'
+        pthfile = r'/home/ivdai/Annotations/KX/Reflection/codes/checkpoints/runet/runet_latest_20211229.pt'
         # pthfile = r'/home/rackel_kk/Annotation/KX/Reflection/codes/checkpoints/runet/runet_latest_20211229.pt'
         self.net_u.load_state_dict(torch.load(pthfile)['icnn'])
         self.net_u = self.net_u.to(self.device)
         in_channels += 3
-        print(self.device)
+        # print(self.device)
         self.net_i = arch.__dict__[self.opt.inet](in_channels, 3).to(self.device)
         networks.init_weights(self.net_i, init_type=opt.init_type) # using default initialization as EDSR
         self.edge_map = EdgeMap(scale=1).to(self.device)
@@ -314,7 +314,7 @@ class ERRNetModel(ERRNetBase):
             input_i.extend(runet_out.unsqueeze(0))
             # input_i = torch.cat(input_i, dim=1)
         input_i = torch.cat(input_i, dim=1)
-        output_i = self.net_i(input_i)
+        output_i = self.net_i(input_i, self.input) # 为了适配swintransformer网络
 
         self.output_i = output_i
         # print("==========================================")
@@ -688,3 +688,4 @@ class RUNetModel(ERRNetBase):
         }
 
         return state_dict
+

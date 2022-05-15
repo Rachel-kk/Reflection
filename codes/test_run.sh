@@ -1,1 +1,2 @@
-CUDA_VISIBLE_DEVICES=7 python test_errnet.py --name errnet -r --icnn_path ./checkpoints/errnet/errnet_latest_e5_2022-04-06.pt  --gpu_ids 0
+#CUDA_VISIBLE_DEVICES=3 python test_errnet.py --name errnet -r --icnn_path ./checkpoints/errnet/errnet_latest_e5_2022-04-06.pt  --gpu_ids 0
+CUDA_VISIBLE_DEVICES=3 python test_errnet.py --name swintranet --inet swintranet  -r --icnn_path ./checkpoints/swintranet/errnet_020_00154640.pt --hyper

@@ -16,17 +16,18 @@ opt.no_log =True
 opt.display_id=0
 opt.verbose = False
 
-datadir = '/home/iv/Annotations/KX/data/Reflection/testsets'
+datadir = '/home/ivdai/Annotations/KX/data/Reflection/testsets'
 # datadir = '/home/rackel_kk/Annotation/KX/data/Reflection/testsets'
 # Define evaluation/test dataset
 
 eval_dataset_ceilnet = datasets.CEILTestDataset(join(datadir, 'testdata_CEILNET_table2'))
 eval_dataset_sir2 = datasets.CEILTestDataset(join(datadir, 'SIR2/WildSceneDataset/withgt'))
 
-eval_dataset_real = datasets.CEILTestDataset(
-    join(datadir, 'real20'),
-    fns=read_fns('../real_test.txt'),
-    size=20)
+# eval_dataset_real = datasets.CEILTestDataset(
+#     join(datadir, 'real20'),
+#     fns=read_fns('../real_test.txt'),
+#     size=20)
+eval_dataset_real90 = datasets.CEILTestDataset(join(datadir, 'real_train'))
 
 eval_dataset_postcard = datasets.CEILTestDataset(join(datadir, 'SIR2/PostcardDataset'))
 eval_dataset_solidobject = datasets.CEILTestDataset(join(datadir, 'SIR2/SolidObjectDataset'))
@@ -43,7 +44,7 @@ eval_dataloader_ceilnet = datasets.DataLoader(
     num_workers=opt.nThreads, pin_memory=True)
 
 eval_dataloader_real = datasets.DataLoader(
-    eval_dataset_real, batch_size=1, shuffle=False,
+    eval_dataset_real90, batch_size=1, shuffle=False,
     num_workers=opt.nThreads, pin_memory=True)
 
 eval_dataloader_sir2 = datasets.DataLoader(
@@ -90,7 +91,7 @@ result_dir = './results'
 # evaluate on four real-world benchmarks
 # res = engine.eval(eval_dataloader_real, dataset_name='testdata_real')
 
-res = engine.eval(eval_dataloader_real, dataset_name='testdata_real', savedir=join(result_dir, 'real20'))
+res = engine.eval(eval_dataloader_real, dataset_name='testdata_real', savedir=join(result_dir, 'real90'))
 res = engine.eval(eval_dataloader_solidobject, dataset_name='testdata_solidobject', savedir=join(result_dir, 'solidobject'))
 res = engine.eval(eval_dataloader_postcard, dataset_name='testdata_postcard', savedir=join(result_dir, 'postcard'))
 res = engine.eval(eval_dataloader_sir2, dataset_name='testdata_sir2', savedir=join(result_dir, 'sir2_withgt'))

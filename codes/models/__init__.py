@@ -9,9 +9,12 @@
 '''
 from .errnet_model import ERRNetModel
 from .errnet_model import RUNetModel
-
+from .swintranet_model import SwinTraNetModel
 def errnet_model():
     return ERRNetModel()
 
 def runet_model():
     return RUNetModel()
+
+def swintranet_model():
+    return SwinTraNetModel()

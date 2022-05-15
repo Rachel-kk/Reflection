@@ -37,7 +37,7 @@ def main():
 # datadir_real = join(datadir, 'real_train')
 
 # modify the following code to
-    datadir = '/home/iv/Annotations/KX/data/Reflection'
+    datadir = '/home/ivdai/Annotations/KX/data/Reflection'
     datadir_syn = join(datadir, 'VOCdevkit/VOC2012/PNGImages')
     datadir_real = join(datadir, 'real_train')
 
@@ -77,12 +77,12 @@ def main():
         res = engine.eval(eval_dataloader_ceilnet, dataset_name='testdata_table2')
 
     # define training strategy
-    # engine.model.opt.lambda_gan = 0
-    engine.model.opt.lambda_gan = 0.01
+    engine.model.opt.lambda_gan = 0
+    # engine.model.opt.lambda_gan = 0.01
     set_learning_rate(1e-4, engine)
     while engine.epoch < 60:
         if engine.epoch == 20:
-            engine.model.opt.lambda_gan = 0.01#0.0 #0.01 # gan loss is added after epoch 20
+            engine.model.opt.lambda_gan = 0.0 #0.01 # gan loss is added after epoch 20
         if engine.epoch == 30:
             set_learning_rate(5e-5, engine)
         if engine.epoch == 40:
